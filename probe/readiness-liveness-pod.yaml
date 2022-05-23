@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readiness-liveness-pod
+spec:
+  containers:
+  - name: readiness-liveness-container
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    ports:
+    - name: http
+      containerPort: 80
+    readinessProbe:
+      httpGet:
+       port: 80
+       path: /index1.html
+      initialDelaySeconds: 1
+      periodSeconds: 3
+    livenessProbe:
+      httpGet:
+        port: http
+        path: /index.html
+      initialDelaySeconds: 1
+      periodSeconds: 3
+      timeoutSeconds: 10 
