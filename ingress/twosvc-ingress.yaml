@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twosvc-deployment-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: twosvc-nginx-1
+  template:
+    metadata:
+      labels:
+        app: twosvc-nginx-1
+    spec:
+      containers:
+      - name: twosvc-nginx-1-container
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twosvc-service-1
+spec:
+  selector:
+    app: twosvc-nginx-1
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twosvc-deployment-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: twosvc-nginx-2
+  template:
+    metadata:
+      labels:
+        app: twosvc-nginx-2
+    spec:
+      containers:
+      - name: twosvc-nginx-2-container
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twosvc-service-2
+spec:
+  selector:
+    app: twosvc-nginx-2
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: twosvc-ingress
+spec:
+  rules:
+  - host: www1.leo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: twosvc-service-1
+            port: 
+              number: 80
+  - host: www2.leo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: twosvc-service-2
+            port: 
+              number: 80

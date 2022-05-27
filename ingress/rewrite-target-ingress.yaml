@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: re-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: http://www.leo.com
+spec:
+  rules:
+  - host: www5.leo.com

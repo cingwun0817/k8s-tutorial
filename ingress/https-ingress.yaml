@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpssvc-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: httpssvc-nginx
+  template:
+    metadata:
+      labels:
+        app: httpssvc-nginx
+    spec:
+      containers:
+      - name: httpssvc-nginx-container
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpssvc-service
+spec:
+  selector:
+    app: httpssvc-nginx
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: httpssvc-ingress
+spec:
+  tls:
+  - hosts:
+    - www3.leo.com
+    secretName: tls-secret
+  rules:
+  - host: www3.leo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: httpssvc-service
+            port: 
+              number: 80
