@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-pod
+spec:
+  containers:
+  - name: cm-container
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    command: ["/bin/sh", "-c", "env"]
+    env:
+      - name: SPECIAL_HOW_KEY
+        valueFrom:
+          configMapKeyRef:
+            name: special-config
+            key: special.how
+      - name: SSPECIAL_TYPE_KEY
+        valueFrom:
+          configMapKeyRef:
+            name: special-config
+            key: special.type
+    envFrom:
+      - configMapRef:
+          name: env-config
+  restartPolicy: Never

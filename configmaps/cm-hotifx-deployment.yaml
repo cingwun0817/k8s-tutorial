@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hotfix-log-config
+data:
+  LOG_LEVEL: INFO
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hotfix-env-config
+data:
+  APP_ENV: DEV
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cm-hotfix-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+        env:
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: hotfix-env-config
+              key: APP_ENV
+      volumes:
+      - name: config-volume
+        configMap:
+          name: hotfix-log-config
+      
+      
+
