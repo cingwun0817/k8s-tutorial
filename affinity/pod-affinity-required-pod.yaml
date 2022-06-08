@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-1
+  labels:
+    app: main-app
+spec:
+  containers:
+  - name: myapp
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-2
+  labels:
+    app: sub-app
+spec:
+  containers:
+  - name: myapp
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - topologyKey: kubernetes.io/hostname
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - main-app
+
