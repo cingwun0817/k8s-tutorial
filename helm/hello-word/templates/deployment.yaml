@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: nginx
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         resources:
           limits:
             memory: "128Mi"
